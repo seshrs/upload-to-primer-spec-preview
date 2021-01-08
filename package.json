@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "upload-to-primer-spec-preview",
+  "version": "1.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "GitHub Action to upload a Jekyll site preview to Primer Spec Preview",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,17 +15,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/seshrs/upload-to-primer-spec-preview.git"
   },
-  "keywords": [
-    "actions",
-    "node",
-    "setup"
-  ],
-  "author": "",
+  "author": "Sesh Sadasivam",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6"
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
@@ -39,7 +35,7 @@
     "jest-circus": "^26.4.2",
     "js-yaml": "^3.14.0",
     "prettier": "2.1.1",
-    "ts-jest": "^24.3.0",
+    "ts-jest": "^26.4.4",
     "typescript": "^4.0.2"
   }
 }
