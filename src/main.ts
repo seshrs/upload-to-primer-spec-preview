@@ -4,10 +4,12 @@ import * as Webhooks from "@octokit/webhooks";
 import fs from "fs";
 import execa from "execa";
 
+import createOrUpdateComment from "./createOrUpdateComment";
+
 async function run(): Promise<void> {
   try {
-    // const githubToken = core.getInput("GH_TOKEN");
-    // const octokit = github.getOctokit(githubToken);
+    const githubToken = core.getInput("GH_TOKEN");
+    const octokit = github.getOctokit(githubToken);
     const event = github.context
       .payload as Webhooks.EventPayloads.WebhookPayloadPullRequest;
 
@@ -45,6 +47,10 @@ async function run(): Promise<void> {
       "-F site=@_site.tar.gz",
     ]);
     core.info("Uploaded to Primer Spec Preview");
+    core.endGroup();
+
+    core.startGroup("💬 Comment on PR");
+    await createOrUpdateComment(octokit, github.context.repo, prNumber);
     core.endGroup();
   } catch (error) {
     core.setFailed(error.message);
