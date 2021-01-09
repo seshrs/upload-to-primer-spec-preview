@@ -8,6 +8,10 @@ inputs:
   PRIMER_SPEC_PREVIEW_SECRET:
     required: true
     description: "include the secret expected by Primer Spec Preview"
+  site_directory_path:
+    required: false
+    default: "_site"
+    description: "path to directory containing site to be previewed"
 runs:
   using: "node12"
   main: "dist/index.js"

@@ -22,7 +22,8 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
-    "@octokit/webhooks": "^7.21.0"
+    "@octokit/webhooks": "^7.21.0",
+    "execa": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
