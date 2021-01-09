@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { context, GitHub } from "@actions/github";
+import * as github from "@actions/github";
 import * as Webhooks from "@octokit/webhooks";
 import * as fs from "fs";
 import execa from "execa";
@@ -9,11 +9,9 @@ import createOrUpdateComment from "./createOrUpdateComment";
 async function run(): Promise<void> {
   try {
     const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
-    // TODO: Figure out why typings aren't working as expected...
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const octokit = new GitHub(githubToken);
-    const event = context.payload as Webhooks.EventPayloads.WebhookPayloadPullRequest;
+    const octokit = github.getOctokit(githubToken);
+    const event = github.context
+      .payload as Webhooks.EventPayloads.WebhookPayloadPullRequest;
 
     const primerSpecPreviewSecret = core.getInput(
       "PRIMER_SPEC_PREVIEW_SECRET",
@@ -21,7 +19,7 @@ async function run(): Promise<void> {
     );
     core.setSecret(primerSpecPreviewSecret);
 
-    const repoString = `${context.repo.owner}/${context.repo.repo}`;
+    const repoString = `${github.context.repo.owner}/${github.context.repo.repo}`;
     const prNumber = event.number;
     const siteDirectory =
       core.getInput("site_directory_path", {
@@ -60,7 +58,7 @@ async function run(): Promise<void> {
     core.endGroup();
 
     core.startGroup("💬 Comment on PR");
-    await createOrUpdateComment(octokit, context.repo, prNumber);
+    await createOrUpdateComment(octokit, github.context.repo, prNumber);
     core.endGroup();
   } catch (error) {
     core.setFailed(error.message);

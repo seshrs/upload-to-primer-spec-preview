@@ -100,7 +100,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
-const github_1 = __webpack_require__(5438);
+const github = __importStar(__webpack_require__(5438));
 const fs = __importStar(__webpack_require__(5747));
 const execa_1 = __importDefault(__webpack_require__(5447));
 const createOrUpdateComment_1 = __importDefault(__webpack_require__(2375));
@@ -108,14 +108,12 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
-            // TODO: Figure out why typings aren't working as expected...
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const octokit = new github_1.GitHub(githubToken);
-            const event = github_1.context.payload;
+            const octokit = github.getOctokit(githubToken);
+            const event = github.context
+                .payload;
             const primerSpecPreviewSecret = core.getInput("PRIMER_SPEC_PREVIEW_SECRET", { required: true });
             core.setSecret(primerSpecPreviewSecret);
-            const repoString = `${github_1.context.repo.owner}/${github_1.context.repo.repo}`;
+            const repoString = `${github.context.repo.owner}/${github.context.repo.repo}`;
             const prNumber = event.number;
             const siteDirectory = core.getInput("site_directory_path", {
                 required: false,
@@ -146,7 +144,7 @@ function run() {
             core.info("Uploaded to Primer Spec Preview");
             core.endGroup();
             core.startGroup("💬 Comment on PR");
-            yield createOrUpdateComment_1.default(octokit, github_1.context.repo, prNumber);
+            yield createOrUpdateComment_1.default(octokit, github.context.repo, prNumber);
             core.endGroup();
         }
         catch (error) {
