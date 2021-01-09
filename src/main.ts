@@ -49,13 +49,18 @@ async function run(): Promise<void> {
     core.endGroup();
 
     core.startGroup("🚀 Upload site preview...");
-    const { stdout: curlOutput, stderr: curlErr } = execa.sync("curl", [
+    const curlCommand = [
+      "curl",
       `-F repo=${repoString}`,
       `-F app_secret=${primerSpecPreviewSecret}`,
       `-F pr_number=${prNumber}`,
       "-F site=@_site.tar.gz",
       "https://preview.seshrs.ml/upload-site-preview",
-    ]);
+    ].join(" ");
+    core.info(curlCommand);
+    const { stdout: curlOutput, stderr: curlErr } = execa.commandSync(
+      curlCommand
+    );
     core.info(curlOutput);
     core.info(curlErr);
     core.info("Uploaded to Primer Spec Preview");
