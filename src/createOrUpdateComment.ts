@@ -22,9 +22,7 @@ export default async function createOrUpdateComment(
     return;
   }
 
-  const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${
-    repo.owner
-  }/${repo.repo}/${{ prNumber }}/.`;
+  const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${prNumber}/.`;
   await octokit.issues.createComment({
     ...repo,
     issue_number: prNumber,

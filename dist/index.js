@@ -46,7 +46,7 @@ function createOrUpdateComment(octokit, repo, prNumber) {
             core.info("Skipping since previous comment exists.");
             return;
         }
-        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${{ prNumber }}/.`;
+        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${prNumber}/.`;
         yield octokit.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number: prNumber, body: commentBody }));
         core.info(commentBody);
     });
@@ -105,6 +105,7 @@ const fs = __importStar(__webpack_require__(5747));
 const execa_1 = __importDefault(__webpack_require__(5447));
 const createOrUpdateComment_1 = __importDefault(__webpack_require__(2375));
 function run() {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
@@ -124,7 +125,7 @@ function run() {
                 return Promise.resolve();
             }
             core.startGroup("🗜 Compress site archive...");
-            yield execa_1.default("tar", [
+            const tarPromise = execa_1.default("tar", [
                 "-C",
                 siteDirectory,
                 "-czf",
@@ -132,16 +133,20 @@ function run() {
                 "--dereference",
                 ".",
             ]);
+            (_a = tarPromise.stdout) === null || _a === void 0 ? void 0 : _a.pipe(process.stdout);
+            yield tarPromise;
             core.info("Created _site.tar.gz");
             core.endGroup();
             core.startGroup("🚀 Upload site preview...");
-            yield execa_1.default("curl", [
-                `-F repo=${repoString}`,
-                `-F app_secret=${primerSpecPreviewSecret}`,
-                `-F pr_number=${prNumber}`,
+            const curlPromise = execa_1.default("curl", [
+                `-F repo="${repoString}"`,
+                `-F app_secret="${primerSpecPreviewSecret}"`,
+                `-F pr_number="${prNumber}"`,
                 "-F site=@_site.tar.gz",
                 "https://preview.seshrs.ml/upload-site-preview",
             ]);
+            (_b = curlPromise.stdout) === null || _b === void 0 ? void 0 : _b.pipe(process.stdout);
+            yield curlPromise;
             core.info("Uploaded to Primer Spec Preview");
             core.endGroup();
             core.startGroup("💬 Comment on PR");
