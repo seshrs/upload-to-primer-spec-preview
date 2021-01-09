@@ -1,11 +1,13 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: "Upload to Primer Spec Preview"
+description: "GitHub Action to upload a Jekyll site preview to Primer Spec Preview"
+author: "Sesh Sadasivam"
 inputs:
-  milliseconds: # change this
+  GITHUB_TOKEN:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: "set secrets.GITHUB_TOKEN here"
+  PRIMER_SPEC_PREVIEW_SECRET:
+    required: true
+    description: "include the secret expected by Primer Spec Preview"
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
