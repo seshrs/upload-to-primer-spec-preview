@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
-import github from "@actions/github";
+import * as github from "@actions/github";
 import * as Webhooks from "@octokit/webhooks";
-import fs from "fs";
+import * as fs from "fs";
 import execa from "execa";
 
 import createOrUpdateComment from "./createOrUpdateComment";
@@ -13,9 +13,11 @@ async function run(): Promise<void> {
     const event = github.context
       .payload as Webhooks.EventPayloads.WebhookPayloadPullRequest;
 
+    const primerSpecPreviewSecret = core.getInput("PRIMER_SPEC_PREVIEW_SECRET");
+    core.setSecret(primerSpecPreviewSecret);
+
     const repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
     const prNumber = event.number;
-    const primerSpecPreviewSecret = core.getInput("PRIMER_SPEC_PREVIEW_SECRET");
     const siteDirectory = core.getInput("site_directory_path");
 
     core.info(
