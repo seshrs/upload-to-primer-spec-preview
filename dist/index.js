@@ -136,14 +136,15 @@ function run() {
             core.info("Created _site.tar.gz");
             core.endGroup();
             core.startGroup("🚀 Upload site preview...");
-            const { stdout: curlOutput } = yield execa_1.default("curl", [
-                `-F repo="${repoString}"`,
-                `-F app_secret="${primerSpecPreviewSecret}"`,
-                `-F pr_number="${prNumber}"`,
+            const { stdout: curlOutput, stderr: curlErr } = execa_1.default.sync("curl", [
+                `-F repo=${repoString}`,
+                `-F app_secret=${primerSpecPreviewSecret}`,
+                `-F pr_number=${prNumber}`,
                 "-F site=@_site.tar.gz",
                 "https://preview.seshrs.ml/upload-site-preview",
             ]);
             core.info(curlOutput);
+            core.info(curlErr);
             core.info("Uploaded to Primer Spec Preview");
             core.endGroup();
             core.startGroup("💬 Comment on PR");
