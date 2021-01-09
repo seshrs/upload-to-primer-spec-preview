@@ -13,6 +13,7 @@ async function run(): Promise<void> {
 
     const repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
     const prNumber = event.number;
+    const primerSpecPreviewSecret = core.getInput("PRIMER_SPEC_PREVIEW_SECRET");
     const siteDirectory = core.getInput("site_directory_path");
 
     core.info(
@@ -24,6 +25,7 @@ async function run(): Promise<void> {
       return Promise.resolve();
     }
 
+    core.startGroup("🗜 Compress site archive...");
     await execa("tar", [
       "-C",
       siteDirectory,
@@ -32,6 +34,18 @@ async function run(): Promise<void> {
       "--dereference",
       ".",
     ]);
+    core.info("Created _site.tar.gz");
+    core.endGroup();
+
+    core.startGroup("🚀 Upload site preview...");
+    await execa("curl", [
+      `-F repo=${repo}`,
+      `-F app_secret=${primerSpecPreviewSecret}`,
+      `-F pr_number=${prNumber}`,
+      "-F site=@_site.tar.gz",
+    ]);
+    core.info("Uploaded to Primer Spec Preview");
+    core.endGroup();
   } catch (error) {
     core.setFailed(error.message);
   }
