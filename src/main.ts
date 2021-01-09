@@ -36,7 +36,7 @@ async function run(): Promise<void> {
     }
 
     core.startGroup("🗜 Compress site archive...");
-    const tarPromise = execa("tar", [
+    const { stdout: tarOutput } = await execa("tar", [
       "-C",
       siteDirectory,
       "-czf",
@@ -44,21 +44,19 @@ async function run(): Promise<void> {
       "--dereference",
       ".",
     ]);
-    tarPromise.stdout?.pipe(process.stdout);
-    await tarPromise;
+    core.info(tarOutput);
     core.info("Created _site.tar.gz");
     core.endGroup();
 
     core.startGroup("🚀 Upload site preview...");
-    const curlPromise = execa("curl", [
+    const { stdout: curlOutput } = await execa("curl", [
       `-F repo="${repoString}"`,
       `-F app_secret="${primerSpecPreviewSecret}"`,
       `-F pr_number="${prNumber}"`,
       "-F site=@_site.tar.gz",
       "https://preview.seshrs.ml/upload-site-preview",
     ]);
-    curlPromise.stdout?.pipe(process.stdout);
-    await curlPromise;
+    core.info(curlOutput);
     core.info("Uploaded to Primer Spec Preview");
     core.endGroup();
 

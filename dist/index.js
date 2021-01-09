@@ -105,7 +105,6 @@ const fs = __importStar(__webpack_require__(5747));
 const execa_1 = __importDefault(__webpack_require__(5447));
 const createOrUpdateComment_1 = __importDefault(__webpack_require__(2375));
 function run() {
-    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
@@ -125,7 +124,7 @@ function run() {
                 return Promise.resolve();
             }
             core.startGroup("🗜 Compress site archive...");
-            const tarPromise = execa_1.default("tar", [
+            const { stdout: tarOutput } = yield execa_1.default("tar", [
                 "-C",
                 siteDirectory,
                 "-czf",
@@ -133,20 +132,18 @@ function run() {
                 "--dereference",
                 ".",
             ]);
-            (_a = tarPromise.stdout) === null || _a === void 0 ? void 0 : _a.pipe(process.stdout);
-            yield tarPromise;
+            core.info(tarOutput);
             core.info("Created _site.tar.gz");
             core.endGroup();
             core.startGroup("🚀 Upload site preview...");
-            const curlPromise = execa_1.default("curl", [
+            const { stdout: curlOutput } = yield execa_1.default("curl", [
                 `-F repo="${repoString}"`,
                 `-F app_secret="${primerSpecPreviewSecret}"`,
                 `-F pr_number="${prNumber}"`,
                 "-F site=@_site.tar.gz",
                 "https://preview.seshrs.ml/upload-site-preview",
             ]);
-            (_b = curlPromise.stdout) === null || _b === void 0 ? void 0 : _b.pipe(process.stdout);
-            yield curlPromise;
+            core.info(curlOutput);
             core.info("Uploaded to Primer Spec Preview");
             core.endGroup();
             core.startGroup("💬 Comment on PR");
