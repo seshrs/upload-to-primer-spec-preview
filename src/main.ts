@@ -8,7 +8,7 @@ import createOrUpdateComment from "./createOrUpdateComment";
 
 async function run(): Promise<void> {
   try {
-    const githubToken = core.getInput("GH_TOKEN", { required: true });
+    const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
     // TODO: Figure out why typings aren't working as expected...
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
