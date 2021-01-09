@@ -53,6 +53,7 @@ async function run(): Promise<void> {
       `-F app_secret=${primerSpecPreviewSecret}`,
       `-F pr_number=${prNumber}`,
       "-F site=@_site.tar.gz",
+      "https://preview.seshrs.ml/upload-site-preview",
     ]);
     core.info("Uploaded to Primer Spec Preview");
     core.endGroup();
