@@ -42,21 +42,31 @@ const core = __importStar(__webpack_require__(2186));
 const HEADER_COMMENT = "<!-- Primer Spec Preview PR Comment -->";
 function createOrUpdateComment(octokit, repo, prNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (yield findPreviousComment(octokit, repo, prNumber)) {
-            core.info("Skipping since previous comment exists.");
-            return;
+        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${prNumber}/.\n\n<sup>(Available until ${getExpiryDate()}.)</sup>`;
+        core.info(`Using comment body:\n${commentBody}`);
+        const previousCommentId = yield findPreviousComment(octokit, repo, prNumber);
+        if (previousCommentId) {
+            core.info("Updating previous comment.");
+            yield octokit.issues.updateComment(Object.assign(Object.assign({}, repo), { comment_id: previousCommentId, body: commentBody }));
         }
-        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${prNumber}/.`;
-        yield octokit.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number: prNumber, body: commentBody }));
-        core.info(commentBody);
+        else {
+            core.info("Creating new comment.");
+            yield octokit.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number: prNumber, body: commentBody }));
+        }
     });
 }
 exports.default = createOrUpdateComment;
 function findPreviousComment(octokit, repo, issue_number) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const { data: comments } = yield octokit.issues.listComments(Object.assign(Object.assign({}, repo), { issue_number }));
-        return !!comments.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes(HEADER_COMMENT); });
+        return ((_b = (_a = comments.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes(HEADER_COMMENT); })) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : null);
     });
+}
+function getExpiryDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return date.toDateString();
 }
 
 
