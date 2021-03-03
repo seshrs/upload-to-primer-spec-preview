@@ -20,14 +20,24 @@ async function run(): Promise<void> {
     core.setSecret(primerSpecPreviewSecret);
 
     const repoString = `${github.context.repo.owner}/${github.context.repo.repo}`;
+    const siteDirectory = core.getInput("site_directory_path") || "_site";
     const prNumber = event.number;
-    const siteDirectory =
-      core.getInput("site_directory_path", {
-        required: false,
-      }) || "_site";
+
+    let usingPrNumber, basename;
+    const customBasename = core.getInput("custom_basename");
+    if (customBasename) {
+      if (customBasename.includes("/") || customBasename.length > 20) {
+        throw new Error(`Invalid custom basename: ${customBasename}`);
+      }
+      usingPrNumber = false;
+      basename = customBasename;
+    } else {
+      usingPrNumber = true;
+      basename = prNumber.toString();
+    }
 
     core.info(
-      `Uploading site preview from ${siteDirectory} for PR #${prNumber} on repo ${repoString}`
+      `Uploading site preview from ${siteDirectory} for basename #${basename} on repo ${repoString}`
     );
 
     if (!fs.lstatSync(siteDirectory).isDirectory()) {
@@ -53,7 +63,7 @@ async function run(): Promise<void> {
       "curl",
       `-F repo=${repoString}`,
       `-F app_secret=${primerSpecPreviewSecret}`,
-      `-F pr_number=${prNumber}`,
+      `-F pr_number=${basename}`,
       "-F site=@_site.tar.gz",
       "https://preview.seshrs.ml/upload-site-preview",
     ].join(" ");
@@ -66,9 +76,11 @@ async function run(): Promise<void> {
     core.info("Uploaded to Primer Spec Preview");
     core.endGroup();
 
-    core.startGroup("💬 Comment on PR");
-    await createOrUpdateComment(octokit, github.context.repo, prNumber);
-    core.endGroup();
+    if (usingPrNumber) {
+      core.startGroup("💬 Comment on PR");
+      await createOrUpdateComment(octokit, github.context.repo, prNumber);
+      core.endGroup();
+    }
   } catch (error) {
     core.setFailed(error.message);
   }

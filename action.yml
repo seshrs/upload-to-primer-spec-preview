@@ -12,6 +12,9 @@ inputs:
     required: false
     default: "_site"
     description: "path to directory containing site to be previewed"
+  custom_basename:
+    required: false
+    description: "The basename for the preview URL. By default, this is the PR number"
 runs:
   using: "node12"
   main: "dist/index.js"
