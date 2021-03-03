@@ -124,11 +124,22 @@ function run() {
             const primerSpecPreviewSecret = core.getInput("PRIMER_SPEC_PREVIEW_SECRET", { required: true });
             core.setSecret(primerSpecPreviewSecret);
             const repoString = `${github.context.repo.owner}/${github.context.repo.repo}`;
+            const siteDirectory = core.getInput("site_directory_path") || "_site";
             const prNumber = event.number;
-            const siteDirectory = core.getInput("site_directory_path", {
-                required: false,
-            }) || "_site";
-            core.info(`Uploading site preview from ${siteDirectory} for PR #${prNumber} on repo ${repoString}`);
+            let usingPrNumber, basename;
+            const customBasename = core.getInput("custom_basename");
+            if (customBasename) {
+                if (customBasename.includes("/") || customBasename.length > 20) {
+                    throw new Error(`Invalid custom basename: ${customBasename}`);
+                }
+                usingPrNumber = false;
+                basename = customBasename;
+            }
+            else {
+                usingPrNumber = true;
+                basename = prNumber.toString();
+            }
+            core.info(`Uploading site preview from ${siteDirectory} for basename #${basename} on repo ${repoString}`);
             if (!fs.lstatSync(siteDirectory).isDirectory()) {
                 core.setFailed(`Site directory does not exist: ${siteDirectory}`);
                 return Promise.resolve();
@@ -150,7 +161,7 @@ function run() {
                 "curl",
                 `-F repo=${repoString}`,
                 `-F app_secret=${primerSpecPreviewSecret}`,
-                `-F pr_number=${prNumber}`,
+                `-F pr_number=${basename}`,
                 "-F site=@_site.tar.gz",
                 "https://preview.seshrs.ml/upload-site-preview",
             ].join(" ");
@@ -160,9 +171,11 @@ function run() {
             core.info(curlErr);
             core.info("Uploaded to Primer Spec Preview");
             core.endGroup();
-            core.startGroup("💬 Comment on PR");
-            yield createOrUpdateComment_1.default(octokit, github.context.repo, prNumber);
-            core.endGroup();
+            if (usingPrNumber) {
+                core.startGroup("💬 Comment on PR");
+                yield createOrUpdateComment_1.default(octokit, github.context.repo, prNumber);
+                core.endGroup();
+            }
         }
         catch (error) {
             core.setFailed(error.message);
