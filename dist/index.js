@@ -42,7 +42,7 @@ const core = __importStar(__webpack_require__(2186));
 const HEADER_COMMENT = "<!-- Primer Spec Preview PR Comment -->";
 function createOrUpdateComment(octokit, repo, prNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${repo.owner}/${repo.repo}/${prNumber}/.\n\n<sup>(Available until ${getExpiryDate()}.)</sup>`;
+        const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.sesh.rs/previews/${repo.owner}/${repo.repo}/${prNumber}/.\n\n<sup>(Available until ${getExpiryDate()}.)</sup>`;
         core.info(`Using comment body:\n${commentBody}`);
         const previousCommentId = yield findPreviousComment(octokit, repo, prNumber);
         if (previousCommentId) {
@@ -163,7 +163,7 @@ function run() {
                 `-F app_secret=${primerSpecPreviewSecret}`,
                 `-F pr_number=${basename}`,
                 "-F site=@_site.tar.gz",
-                "https://preview.seshrs.ml/upload-site-preview",
+                "https://preview.sesh.rs/upload-site-preview",
             ].join(" ");
             core.info(curlCommand);
             const { stdout: curlOutput, stderr: curlErr } = execa_1.default.commandSync(curlCommand);

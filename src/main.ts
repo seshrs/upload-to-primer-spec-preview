@@ -65,7 +65,7 @@ async function run(): Promise<void> {
       `-F app_secret=${primerSpecPreviewSecret}`,
       `-F pr_number=${basename}`,
       "-F site=@_site.tar.gz",
-      "https://preview.seshrs.ml/upload-site-preview",
+      "https://preview.sesh.rs/upload-site-preview",
     ].join(" ");
     core.info(curlCommand);
     const { stdout: curlOutput, stderr: curlErr } = execa.commandSync(

@@ -17,7 +17,7 @@ export default async function createOrUpdateComment(
   repo: RepoType,
   prNumber: number
 ): Promise<void> {
-  const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.seshrs.ml/previews/${
+  const commentBody = `${HEADER_COMMENT}\nThe spec from this PR is available at https://preview.sesh.rs/previews/${
     repo.owner
   }/${
     repo.repo
