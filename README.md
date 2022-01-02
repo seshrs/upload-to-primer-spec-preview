@@ -44,7 +44,7 @@ jobs:
       - name: 💎 Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: '3.0'
 
       # Build the Jekyll site. This GH action from the marketplace is
       # indirectly endorsed by Jekyll, and simply builds the Jekyll site
